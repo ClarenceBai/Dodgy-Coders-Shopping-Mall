@@ -1,0 +1,103 @@
+# ---------------Host server---------------
+server:
+  port: 9000
+
+# ---------------Route mapping---------------
+spring:
+  cloud:
+    gateway:
+      httpclient:
+        wiretap: true
+      httpserver:
+        wiretap: true
+
+      routes:
+        - id: goods-service
+          uri: http://goods-service:9002/
+          predicates:
+            - Path=/api/goods/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: GoodsCircuitBreaker
+                fallbackUri: forward:/fallback/goodsFallback
+
+        - id: order-service
+          uri: http://order-service:9001/
+          predicates:
+            - Path=/api/order/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: OrderCircuitBreaker
+                fallbackUri: forward:/fallback/orderFallback
+
+        - id: user-service
+          uri: http://user-service/
+          predicates:
+            - Path=/user/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: UserCircuitBreaker
+                fallbackUri: forward:/fallback/userFallback
+
+        - id: payment-service
+          uri: http://payment-service/
+          predicates:
+            - Path=/api/payment/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: PaymentCircuitBreaker
+                fallbackUri: forward:/fallback/paymentFallback
+
+        - id: gateway-server
+          uri: http://gateway-server:9000/
+          predicates:
+            - Path=/api/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: GatewayCircuitBreaker
+                fallbackUri: forward:/fallback/gatewayFallback
+
+# ---------------Set gateway timeout range---------------
+resilience4j:
+  timelimiter:
+    instances:
+      goods-service:
+        timeout-duration: 8s
+      order-service:
+        timeout-duration: 8s
+      user-service:
+        timeout-duration: 8s
+      payment-service:
+        timeout-duration: 8s
+      gateway-server:
+        timeout-duration: 8s
+
+  circuitbreaker:
+    configs:
+      default:
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+        registerHealthIndicator: true
+        failureRateThreshold: 100
+
+    instances:
+      goods-service:
+        baseConfig: default
+      order-service:
+        baseConfig: default
+      user-service:
+        baseConfig: default
+      payment-service:
+        baseConfig: default
+      gateway-server:
+        baseConfig: default
+
+
+# ---------------Enable traceback log---------------
+logging:
+  level:
+    org.springframework.cloud.gateway.handler.RoutePredicateHandlerMapping: TRACE

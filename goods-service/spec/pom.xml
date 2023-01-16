@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.7.5</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+    <groupId>ie.ucd.dodgycoders.goodsservice</groupId>
+    <artifactId>api-spec</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>Goods Service API Specification</name>
+    <description>Goods Service API Specification</description>
+
+    <properties>
+        <java.version>1.8</java.version>
+        <openapi.generator.maven.plugin.version>6.2.1</openapi.generator.maven.plugin.version>
+        <!-- <swagger-annotations-version>1.5.8</swagger-annotations-version> -->
+        <!-- <springfox-version>2.8.0</springfox-version> -->
+        <spring-cloud.version>2021.0.5</spring-cloud.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+        </dependency>
+
+        <!-- START dependencies are needed for the client being generated -->
+        <!-- <dependency>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-annotations</artifactId>
+            <version>${swagger-annotations-version}</version>
+        </dependency> -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <!-- <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-commons</artifactId>
+        </dependency> -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
+        <!--SpringFox dependencies -->
+        <!-- <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
+            <version>${springfox-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger-ui</artifactId>
+            <version>${springfox-version}</version>
+        </dependency> -->
+        <!-- <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>2.2.11</version>
+        </dependency> -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.openapitools</groupId>
+            <artifactId>jackson-databind-nullable</artifactId>
+            <version>0.1.0</version>
+        </dependency>
+        <!-- Bean Validation API support -->
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.swagger.parser.v3</groupId>
+            <artifactId>swagger-parser</artifactId>
+            <version>2.1.8</version>
+        </dependency>
+        <!-- END dependencies are needed for the client being generated -->
+
+        <!-- <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency> -->
+    </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>Greenwich.RELEASE</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.openapitools</groupId>
+                <artifactId>openapi-generator-maven-plugin</artifactId>
+                <!-- RELEASE_VERSION -->
+                <version>${openapi.generator.maven.plugin.version}</version>
+                <!-- /RELEASE_VERSION -->
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <!-- https://openapi-generator.tech/docs/generators/spring -->
+                            <inputSpec>${project.basedir}/src/main/resources/api.yaml</inputSpec>
+
+                            <!-- use below configuration to generate the Spring Boot server stub -->
+                            <generatorName>spring</generatorName>
+
+                            <!-- use below combinations to generate the OpenFeign client -->
+                            <!-- COMMENT IT OUT TO GENERATE THE SERVER STUB -->
+                            <!-- refer to "CONFIG OPTIONS" => "library" at https://openapi-generator.tech/docs/generators/spring -->
+                            <library>spring-cloud</library>
+
+                            <!-- https://stackoverflow.com/questions/42840576/springboot-unable-to-find-a-single-main-class-from-the-following-candidates -->
+                            <!-- <generateApiTests>false</generateApiTests>
+                            <generateModelTests>false</generateModelTests> -->
+
+                            <!-- USELESS!!!!!!!!! -->
+                            <!-- <packageName>ie.ucd.dodgycoders.orderservice</packageName> -->
+
+                            <!-- https://github.com/OpenAPITools/openapi-generator/tree/master/modules/openapi-generator-maven-plugin -->
+                            <!-- pom artifact settings -->
+                            <groupId>${groupId}</groupId>
+                            <artifactId>${artifactId}</artifactId>
+                            <artifactVersion>${version}</artifactVersion>
+
+                            <!-- YES THEY HAVE TO BE SET INDIVIDUALLY -->
+                            <apiPackage>${groupId}.api</apiPackage>
+                            <modelPackage>${groupId}.api.model</modelPackage>
+
+                            <configOptions>
+                                <!-- <sourceFolder>src/gen/java/main</sourceFolder> -->
+
+                                <!-- This only changes the invoker package name, i.e.: OpenApiGeneratorApplication & RFC3339DateFormat.java. -->
+                                <basePackage>${groupId}</basePackage>
+
+                                <!-- change package of api/model/config of the generated files -->
+                                <configPackage>${groupId}.api.config</configPackage>
+
+                                <!-- generate a delegate interface and allow us to implment the API
+                                    by implementing it. The generated code can be separated from our application code. -->
+                                <delegatePattern>true</delegatePattern>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

@@ -1,0 +1,103 @@
+openapi: 3.0.3
+info:
+  title: Order Service - OpenAPI 3.0
+  description: |-
+    Order Service is one of the micro-services of the Dodgy Coders online shopping mall Server based on the [OpenAPI](https://www.openapis.org) 3.0 specification.
+
+    Some useful links:
+    - [The Pet Store repository](https://github.com/swagger-api/swagger-petstore)
+    - [The source API definition for the Pet Store](https://github.com/swagger-api/swagger-petstore/blob/master/src/main/resources/openapi.yaml)
+  version: 0.0.1
+servers:
+  - url: http://localhost:9001/api
+  - url: https://dodgycoders.ucd.ie/api
+tags:
+  - name: order
+    description: Online orders placed by users
+paths:
+  /order:
+    put:
+      tags:
+        - order
+      requestBody:
+        description: Place an order
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Order"
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+        "405":
+          description: Validation exception
+        "500":
+          description: fail to place the order
+components:
+  schemas:
+    Order:
+      type: object
+      required:
+        - userId
+        - orderItems
+        - orderDate
+        - totalAmount
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 100000
+        userId:
+          type: integer
+          format: int64
+          example: 10
+        orderItems:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderItem"
+        orderDate:
+          type: string
+          format: date-time
+          example: "2022-11-12T17:32:28Z"
+        totalAmount:
+          type: number
+          format: float
+          example: 325.53
+        status:
+          type: string
+          description: Order Status
+          example: placed
+          enum:
+            - placed
+            - paid
+            - delivered
+        complete:
+          type: boolean
+          description: Order completion status
+          example: false
+    OrderItem:
+      type: object
+      required:
+        - goodsId
+        - goodsName
+        - price
+        - quantity
+      properties:
+        goodsId:
+          type: integer
+          format: int64
+          example: 1353
+        goodsNname:
+          type: string
+          example: "Macboook"
+        price:
+          type: number
+          format: float
+          example: 1500
+        quantity:
+          type: integer
+          format: int64
+          example: 3

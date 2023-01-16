@@ -1,0 +1,95 @@
+openapi: 3.0.3
+info:
+  title: Dodgy Drivers Online mall - OpenAPI 3.0
+  description: |-
+    This is an online shopping mall Server based on the OpenAPI 3.0 specification.  You can find out more about
+    Swagger at [https://swagger.io](https://swagger.io).
+
+    Some useful links:
+    - [The Pet Store repository](https://github.com/swagger-api/swagger-petstore)
+    - [The source API definition for the Pet Store](https://github.com/swagger-api/swagger-petstore/blob/master/src/main/resources/openapi.yaml)
+  version: 0.0.1
+servers:
+  - url: https://dodgycoders.ucd.ie/api
+tags:
+  - name: goods
+    description: All goods in our shopping mall
+paths:
+  /goods:
+    get:
+      tags:
+        - goods
+      summary: Find all goods
+      description: Get all goods by a single call
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Goods'
+        '400':
+          description: Invalid itemId supplied
+        '404':
+          description: Item not found
+
+  '/goods/{itemId}':
+    get:
+      tags:
+        - goods
+      summary: Find an item by id
+      description: Get an item by its id
+      parameters:
+        - name: itemId
+          in: path
+          description: Item to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Goods'
+        '400':
+          description: Invalid itemId supplied
+        '404':
+          description: Item not found
+
+components:
+  schemas:
+    Goods:
+      type: object
+      properties:
+        itemId:
+          type: integer
+          format: int64
+          example: 10
+        name:
+          type: string
+          format: string
+          example: "iphone14"
+        price:
+          type: string
+          format: string
+          example: "$799.99"
+        stock:
+          type: integer
+          format: int64
+          example: 99
+
+    ApiResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        type:
+          type: string
+        message:
+          type: string
+      xml:
+        name: "##default"

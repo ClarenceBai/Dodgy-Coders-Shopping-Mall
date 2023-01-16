@@ -1,0 +1,65 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: order-service
+spec:
+  selector:
+    app: order-service
+  ports:
+    - protocol: TCP
+      port: 9001
+      targetPort: 9001
+
+---
+# Reference: https://kubernetes.io/docs/tasks/run-application/run-stateless-application-deployment/
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: orderservice-deployment
+spec:
+  selector:
+    matchLabels:
+      app: order-service
+  replicas: 1 # tells deployment to run 2 pods matching the template
+  template:
+    metadata:
+      labels:
+        app: order-service
+    spec:
+      containers:
+        - name: order-service
+          image: order-service:0.0.1
+          # https://iximiuz.com/en/posts/kubernetes-kind-load-docker-image/
+          # https://kubernetes.io/docs/concepts/containers/images/#updating-images
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 9001
+          resources:
+            requests:
+              memory: "500Mi"
+              cpu: "1000m"
+            limits:
+              memory: "700Mi"
+              cpu: "1000m"
+
+---
+# Reference: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale-walkthrough/
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: php-apache
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: orderservice-deployment
+  minReplicas: 1
+  maxReplicas: 2
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 60
